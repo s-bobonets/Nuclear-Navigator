@@ -38,6 +38,11 @@ public class Movement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        ControlShip();
+    }
+
+    private void ControlShip()
+    {
         _rigidbody.AddForce(transform.up * (_thrustForward * _forwardThrustMult));
         _rigidbody.AddTorque(Vector3.forward * (_thrustRotate * _rotateThrustMult));
     }

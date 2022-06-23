@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    private Controls _controls;
+    public static Controls ControlsInstance;
     private Rigidbody _rigidbody;
 
     [SerializeField] private float _rotateThrustMult;
@@ -16,13 +16,13 @@ public class Movement : MonoBehaviour
 
     private void Awake()
     {
-        _controls = new Controls();
-        _controls.Enable();
+        ControlsInstance = new Controls();
+        ControlsInstance.Enable();
     }
 
     private void OnDestroy()
     {
-        _controls.Disable();
+        ControlsInstance.Disable();
     }
 
     private void Start()
@@ -32,8 +32,8 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
-        _thrustForward = _controls.GameMap.Thrust.ReadValue<float>();
-        _thrustRotate = _controls.GameMap.Rotate.ReadValue<float>();
+        _thrustForward = ControlsInstance.GameMap.Thrust.ReadValue<float>();
+        _thrustRotate = ControlsInstance.GameMap.Rotate.ReadValue<float>();
     }
 
     private void FixedUpdate()

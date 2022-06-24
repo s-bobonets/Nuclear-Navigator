@@ -5,23 +5,31 @@ public class AudioManager : MonoBehaviour
 {
     private AudioSource _audioSource;
 
-    public Action<float, AudioClip, bool> PlayThruster;
+    public Action<AudioClip, float, bool> OnPlaySound;
 
     private void Awake()
     {
         _audioSource = GameObject.FindWithTag("Player").GetComponent<AudioSource>();
 
-        PlayThruster += Play;
+        OnPlaySound += PlaySound;
     }
 
-    private void Play(float volume, AudioClip clip, bool controlVolume)
+    private void PlaySound(AudioClip clip, float value, bool once)
     {
-        if (controlVolume)
-            _audioSource.volume = volume * .2f;
+        if (!once)
+        {
+            _audioSource.volume = value;
 
-        if (_audioSource.isPlaying) return;
-
-
-        _audioSource.PlayOneShot(clip);
+            if (!_audioSource.isPlaying)
+                _audioSource.PlayOneShot(clip);
+            if (value == 0f)
+                _audioSource.Stop();
+        }
+        else
+        {
+            _audioSource.volume = 1f;
+            _audioSource.Stop();
+            _audioSource.PlayOneShot(clip);
+        }
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Omnibus : MonoBehaviour
 {
@@ -8,28 +7,46 @@ public class Omnibus : MonoBehaviour
     private AudioClip _thrusterSound;
 
     [SerializeField] private AudioClip _explosionSound;
+    [SerializeField] private AudioClip _finishSound;
 
     private InputHandler _inputHandler;
     private LevelManager _levelManager;
     private AudioManager _audioManager;
     private CollisionHandler _collisionHandler;
+    private Navigator _navigator;
 
-    public Action<Collidable.CollisionType> OnColl;
+    private (float, float) _thrusts;
 
-    public float Thrust { get; private set; }
-    public float Turn { get; private set; }
+    private bool _playOnce;
+    private bool _playedOnce;
 
     private void Awake()
     {
         _inputHandler = GetComponent<InputHandler>();
         _levelManager = GetComponent<LevelManager>();
         _audioManager = GetComponent<AudioManager>();
-        _collisionHandler = GameObject.FindWithTag("Player").GetComponent<CollisionHandler>();
 
-        _collisionHandler.OnCollide += Coll;
+        _navigator = GameObject.FindWithTag("Player").GetComponent<Navigator>();
+        _collisionHandler = GameObject.FindWithTag("Player").GetComponent<CollisionHandler>();
     }
 
-    // private void Update() => _audioManager.PlayThruster?.Invoke(Thrust, _thrusterSound, true);
+    private void Start() => _collisionHandler.OnCollide += Coll;
+
+    private void Update()
+    {
+        UpdateInput();
+        PlaySound();
+    }
+
+    private void PlaySound()
+    {
+        if (_playOnce) return;
+        _audioManager.OnPlaySound?.Invoke(_thrusterSound, _thrusts.Item1, false);
+    }
+
+    private void FixedUpdate() => _navigator.Move(_thrusts);
+    private void UpdateInput() => _thrusts = _inputHandler.ReadThrusts();
+
 
     private void Coll(Collidable.CollisionType type)
     {
@@ -41,43 +58,37 @@ public class Omnibus : MonoBehaviour
                 break;
             case Collidable.CollisionType.End:
                 ResetThrust();
-                //place particles
-                //play audio jingle
+                _playOnce = true;
+                if (!_playedOnce)
+                {
+                    _audioManager.OnPlaySound?.Invoke(_finishSound, 1f, true);
+                    _playedOnce = true;
+                }
+
                 _levelManager.OnNextLevel?.Invoke(false);
                 break;
             case Collidable.CollisionType.Obstacle:
                 ResetThrust();
-                //place particles
-                //play explosion audio
+                _playOnce = true;
+                if (!_playedOnce)
+                {
+                    _audioManager.OnPlaySound?.Invoke(_explosionSound, 1f, true);
+                    _playedOnce = true;
+                }
+
                 _levelManager.OnNextLevel?.Invoke(true);
                 break;
             case Collidable.CollisionType.Bonus:
+                //Legacy CollisionType from powerup test
                 //this shouldn't happen
                 //and it never does =P
                 break;
             default:
+                //never ever this would get called
                 print("the future is female!");
                 break;
         }
     }
 
-    private void ResetThrust()
-    {
-        _inputHandler.Thrust -= PopThrust;
-        _inputHandler.Turn -= PopTurn;
-
-        Thrust = 0f;
-        Turn = 0f;
-    }
-
-    private void Start()
-    {
-        _inputHandler.Thrust += PopThrust;
-        _inputHandler.Turn += PopTurn;
-
-        _audioManager.PlayThruster?.Invoke(Thrust, _thrusterSound, false);
-    }
-
-    private void PopTurn(float value) => Turn = value;
-    private void PopThrust(float value) => Thrust = value;
+    private void ResetThrust() => _thrusts = default;
 }

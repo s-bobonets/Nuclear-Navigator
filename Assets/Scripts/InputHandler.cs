@@ -5,28 +5,18 @@ public class InputHandler : MonoBehaviour
 {
     private Controls _controls;
 
-    public Action<float> Thrust;
-    public Action<float> Turn;
-
     private void Awake()
     {
         _controls = new Controls();
         _controls.Enable();
     }
 
-    private void OnDisable()
+    public (float, float) ReadThrusts()
     {
-        _controls.Disable();
+        return (_controls.GameMap.Thrust.ReadValue<float>(),
+            _controls.GameMap.Rotate.ReadValue<float>());
     }
 
-    private void OnDestroy()
-    {
-        _controls.Disable();
-    }
-
-    private void Update()
-    {
-        Thrust?.Invoke(_controls.GameMap.Thrust.ReadValue<float>());
-        Turn?.Invoke(_controls.GameMap.Rotate.ReadValue<float>());
-    }
+    private void OnDisable() => _controls.Disable();
+    private void OnDestroy() => _controls.Disable();
 }

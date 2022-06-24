@@ -27,7 +27,7 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
-            _audioSource.volume = 1f;
+            _audioSource.volume = 5f;
             _audioSource.Stop();
             _audioSource.PlayOneShot(clip);
         }

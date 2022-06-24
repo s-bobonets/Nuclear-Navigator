@@ -35,59 +35,56 @@ public class Omnibus : MonoBehaviour
     private void Update()
     {
         UpdateInput();
-        PlaySound();
-    }
-
-    private void PlaySound()
-    {
-        if (_playOnce) return;
-        _audioManager.OnPlaySound?.Invoke(_thrusterSound, _thrusts.Item1, false);
+        PlaySoundContinuously(_thrusterSound);
     }
 
     private void FixedUpdate() => _navigator.Move(_thrusts);
     private void UpdateInput() => _thrusts = _inputHandler.ReadThrusts();
 
-
-    private void Coll(Collidable.CollisionType type)
+    private void Coll(Collide.CollisionType type)
     {
         print($"touching {type}");
 
         switch (type)
         {
-            case Collidable.CollisionType.Start:
+            case Collide.CollisionType.Start:
                 break;
-            case Collidable.CollisionType.End:
+            case Collide.CollisionType.End:
                 ResetThrust();
-                _playOnce = true;
-                if (!_playedOnce)
-                {
-                    _audioManager.OnPlaySound?.Invoke(_finishSound, 1f, true);
-                    _playedOnce = true;
-                }
+                PlaySoundOnce(_finishSound);
 
                 _levelManager.OnNextLevel?.Invoke(false);
                 break;
-            case Collidable.CollisionType.Obstacle:
+            case Collide.CollisionType.Obstacle:
                 ResetThrust();
-                _playOnce = true;
-                if (!_playedOnce)
-                {
-                    _audioManager.OnPlaySound?.Invoke(_explosionSound, 1f, true);
-                    _playedOnce = true;
-                }
+                PlaySoundOnce(_explosionSound);
 
                 _levelManager.OnNextLevel?.Invoke(true);
                 break;
-            case Collidable.CollisionType.Bonus:
-                //Legacy CollisionType from powerup test
+            case Collide.CollisionType.Bonus:
+                //Legacy CollisionType from powerUp test
                 //this shouldn't happen
                 //and it never does =P
                 break;
             default:
-                //never ever this would get called
+                //never ever would this get called
                 print("the future is female!");
                 break;
         }
+    }
+
+    private void PlaySoundOnce(AudioClip finishSound)
+    {
+        _playOnce = true;
+        if (_playedOnce) return;
+        _audioManager.OnPlaySound?.Invoke(finishSound, 1f, true);
+        _playedOnce = true;
+    }
+
+    private void PlaySoundContinuously(AudioClip thrusterSound)
+    {
+        if (_playOnce) return;
+        _audioManager.OnPlaySound?.Invoke(thrusterSound, _thrusts.Item1, false);
     }
 
     private void ResetThrust() => _thrusts = default;

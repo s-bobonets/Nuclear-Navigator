@@ -1,29 +1,38 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
-    public static Action OnLevelReload;
+    public Action<bool> OnNextLevel;
 
-    private int _i;
+    private void Awake() => OnNextLevel += ChangeLevel;
 
-    private int Index
+    private void ChangeLevel(bool restart = false)
     {
-        get
+        StartCoroutine(LoadNext(restart));
+    }
+
+    private IEnumerator LoadNext(bool restart)
+    {
+        var currentIndex = SceneManager.GetActiveScene().buildIndex;
+        var sceneCount = SceneManager.sceneCountInBuildSettings;
+
+        yield return new WaitForSeconds(1f); // delay hardcoded
+
+        if (restart)
+            SceneManager.LoadScene(currentIndex);
+
+        else
         {
-            _i++;
-            return _i % 2;
+            if (currentIndex == sceneCount - 1)
+            {
+                currentIndex = 0;
+                SceneManager.LoadScene(currentIndex);
+            }
+            else
+                SceneManager.LoadScene(currentIndex + 1);
         }
-    }
-
-    private void Awake()
-    {
-        OnLevelReload += LoadNextLevel;
-    }
-
-    private void LoadNextLevel()
-    {
-        SceneManager.LoadScene(Index);
     }
 }

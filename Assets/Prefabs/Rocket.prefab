@@ -15,11 +15,10 @@ GameObject:
   - component: {fileID: 659849568720259736}
   - component: {fileID: 659849568720259741}
   - component: {fileID: 659849568720259731}
-  - component: {fileID: 659849568720259742}
-  - component: {fileID: 7440674706536016461}
+  - component: {fileID: 5514898552140250725}
   m_Layer: 0
   m_Name: Rocket
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -226,21 +225,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29ccc4fe976d8da4da8195283c05015c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _bus: {fileID: 0}
   _rotateThrustMult: 1
   _forwardThrustMult: 32
---- !u!114 &659849568720259742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 659849568076924257}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27d846dda3519fd4f8e1d358073aaf1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &7440674706536016461
+--- !u!114 &5514898552140250725
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

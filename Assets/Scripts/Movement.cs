@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-    public static Controls ControlsInstance;
+    [SerializeField] private Omnibus _bus;
     private Rigidbody _rigidbody;
 
     [SerializeField] private float _rotateThrustMult;
@@ -14,26 +14,17 @@ public class Movement : MonoBehaviour
     private float _thrustForward;
     private float _thrustRotate;
 
-    private void Awake()
-    {
-        ControlsInstance = new Controls();
-        ControlsInstance.Enable();
-    }
-
-    private void OnDestroy()
-    {
-        ControlsInstance.Disable();
-    }
-
     private void Start()
     {
+        _bus = GameObject.FindWithTag("GameController").GetComponent<Omnibus>();
+
         _rigidbody = gameObject.GetComponent<Rigidbody>();
     }
 
     private void Update()
     {
-        _thrustForward = ControlsInstance.GameMap.Thrust.ReadValue<float>();
-        _thrustRotate = ControlsInstance.GameMap.Rotate.ReadValue<float>();
+        _thrustForward = _bus.Thrust;
+        _thrustRotate = _bus.Turn;
     }
 
     private void FixedUpdate()

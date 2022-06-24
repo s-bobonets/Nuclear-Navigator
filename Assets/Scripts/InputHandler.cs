@@ -14,6 +14,11 @@ public class InputHandler : MonoBehaviour
         _controls.Enable();
     }
 
+    private void OnDisable()
+    {
+        _controls.Disable();
+    }
+
     private void OnDestroy()
     {
         _controls.Disable();

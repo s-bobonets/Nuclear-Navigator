@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 128551112475478145}
   - component: {fileID: 1496938698}
   - component: {fileID: 517423812}
+  - component: {fileID: 1620313724}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: GameController
@@ -47,9 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ad8ce63ef919cc499d90472b45609a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _thrusterSound: {fileID: 8300000, guid: bebeae9af03e58f448e647e19cfc008d, type: 3}
-  _explosionSound: {fileID: 8300000, guid: 71f7122eaf4e5e54789e53f3f2075cc8, type: 3}
-  _finishSound: {fileID: 8300000, guid: 2b6e9de63fd518946b3001712bb74512, type: 3}
 --- !u!114 &128551112475478145
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,3 +84,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d846dda3519fd4f8e1d358073aaf1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1620313724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128551112475478159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c09d31a1e8c716479e7b5e6be64a24a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  thrusterSound: {fileID: 8300000, guid: bebeae9af03e58f448e647e19cfc008d, type: 3}
+  collisionSound: {fileID: 8300000, guid: 71f7122eaf4e5e54789e53f3f2075cc8, type: 3}
+  finishSound: {fileID: 8300000, guid: 2b6e9de63fd518946b3001712bb74512, type: 3}

@@ -5,7 +5,7 @@ public class Collide : MonoBehaviour
     public enum CollisionType
     {
         Start,
-        End,
+        Finish,
         Obstacle,
         Bonus
     }

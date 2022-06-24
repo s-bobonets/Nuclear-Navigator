@@ -3,12 +3,7 @@ using UnityEngine;
 
 public class Omnibus : MonoBehaviour
 {
-    [Header("Data:")] [Space(12f)] [SerializeField]
-    private AudioClip _thrusterSound;
-
-    [SerializeField] private AudioClip _explosionSound;
-    [SerializeField] private AudioClip _finishSound;
-
+    private Data _data;
     private InputHandler _inputHandler;
     private LevelManager _levelManager;
     private AudioManager _audioManager;
@@ -22,6 +17,7 @@ public class Omnibus : MonoBehaviour
 
     private void Awake()
     {
+        _data = GetComponent<Data>();
         _inputHandler = GetComponent<InputHandler>();
         _levelManager = GetComponent<LevelManager>();
         _audioManager = GetComponent<AudioManager>();
@@ -35,7 +31,7 @@ public class Omnibus : MonoBehaviour
     private void Update()
     {
         UpdateInput();
-        PlaySoundContinuously(_thrusterSound);
+        PlaySoundContinuously(_data.thrusterSound);
     }
 
     private void FixedUpdate() => _navigator.Move(_thrusts);
@@ -49,15 +45,15 @@ public class Omnibus : MonoBehaviour
         {
             case Collide.CollisionType.Start:
                 break;
-            case Collide.CollisionType.End:
+            case Collide.CollisionType.Finish:
                 ResetThrust();
-                PlaySoundOnce(_finishSound);
+                PlaySoundOnce(_data.finishSound);
 
                 _levelManager.OnNextLevel?.Invoke(false);
                 break;
             case Collide.CollisionType.Obstacle:
                 ResetThrust();
-                PlaySoundOnce(_explosionSound);
+                PlaySoundOnce(_data.collisionSound);
 
                 _levelManager.OnNextLevel?.Invoke(true);
                 break;

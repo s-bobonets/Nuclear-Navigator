@@ -1,35 +1,41 @@
+using System;
 using UnityEngine;
 
 public class Omnibus : MonoBehaviour
 {
-    private Data _data;
+    private Data _gameData;
+
+    private DataAccess _shipData;
+    private ParticleSystem[] _psExhausts;
+    private MeshRenderer[] _shipMRenderers;
+
     private InputHandler _inputHandler;
     private LevelManager _levelManager;
     private AudioManager _audioManager;
     private CollisionHandler _collisionHandler;
-    private Navigator _navigator;
-
-    private ParticleAccess _particles;
-    private ParticleSystem _trail;
+    private ShipController _shipController;
 
     private (float, float) _thrusts;
 
-    private bool _playSoundOnce;
+    private bool _playSoundOnce; // remove one of these
     private bool _playedSoundOnce;
-    private bool _exploded;
+    private bool _itsBlown;
+    private bool _readInput = true;
 
     private void Awake()
     {
-        _data = GetComponent<Data>();
+        _gameData = GetComponent<Data>();
         _inputHandler = GetComponent<InputHandler>();
         _levelManager = GetComponent<LevelManager>();
         _audioManager = GetComponent<AudioManager>();
 
-        _navigator = GameObject.FindWithTag("Player").GetComponent<Navigator>();
+        _shipController = GameObject.FindWithTag("Player").GetComponent<ShipController>();
         _collisionHandler = GameObject.FindWithTag("Player").GetComponent<CollisionHandler>();
 
-        _particles = GameObject.FindWithTag("Player").GetComponent<ParticleAccess>();
-        _trail = _particles.streamFlame.GetComponent<ParticleSystem>();
+        _shipData = GameObject.FindWithTag("Player").GetComponent<DataAccess>();
+        _psExhausts = _shipData.psExhausts;
+
+        _shipMRenderers = _shipData.shipMRenderers;
     }
 
     private void Start() => _collisionHandler.OnCollide += Coll;
@@ -37,23 +43,29 @@ public class Omnibus : MonoBehaviour
     private void Update()
     {
         UpdateInput();
-        PlaySoundContinuously(_data.thrusterSound);
-        PlayTrail();
+        PlaySoundContinuously(_gameData.thrusterSound);
+        DrawExhaust();
     }
 
-    private void PlayTrail()
+    private void DrawExhaust()
     {
-        ActivateParticles(_particles.streamFlame, false);
+        foreach (var item in _psExhausts)
+        {
+            var emission = item.emission;
+            var shape = item.shape;
 
-        var emission = _trail.emission;
-        var shape = _trail.shape;
-
-        emission.rateOverTime = 32f * _thrusts.Item1;
-        shape.scale = new Vector3(1f, 1f, _thrusts.Item1);
+            emission.rateOverTime = 32f * _thrusts.Item1;
+            shape.scale = new Vector3(1f, 1f, _thrusts.Item1);
+        }
     }
 
-    private void FixedUpdate() => _navigator.Move(_thrusts);
-    private void UpdateInput() => _thrusts = _inputHandler.ReadThrusts();
+    private void FixedUpdate() => _shipController.Move(_thrusts);
+
+    private void UpdateInput()
+    {
+        if (!_readInput) return;
+        _thrusts = _inputHandler.ReadThrusts();
+    }
 
     private void Coll(Collide.CollisionType type)
     {
@@ -65,15 +77,16 @@ public class Omnibus : MonoBehaviour
                 break;
             case Collide.CollisionType.Finish:
                 ResetThrust();
-                PlaySoundOnce(_data.finishSound);
-                ActivateParticles(_particles.success);
+                PlaySoundOnce(_gameData.finishSound);
+                ActivateExplosion(_shipData.goWarp);
 
                 _levelManager.OnNextLevel?.Invoke(false);
                 break;
             case Collide.CollisionType.Obstacle:
                 ResetThrust();
-                PlaySoundOnce(_data.collisionSound);
-                ActivateParticles(_particles.explosion);
+                PlaySoundOnce(_gameData.collisionSound);
+                ActivateExplosion(_shipData.goExplosion);
+                HideShip();
 
                 _levelManager.OnNextLevel?.Invoke(true);
                 break;
@@ -89,16 +102,24 @@ public class Omnibus : MonoBehaviour
         }
     }
 
-    private void ActivateParticles(GameObject particleSpawner, bool resetParent = true)
+    private void HideShip()
     {
-        if (_exploded) return;
+        foreach (var item in _shipMRenderers)
+        {
+            item.enabled = false;
+        }
+    }
 
-        if (!particleSpawner.activeSelf)
-            particleSpawner.SetActive(true);
+    private void ActivateExplosion(GameObject goParticle)
+    {
+        // we never need more than one type of ship explosion in a level
+        if (_itsBlown) return;
 
-        if (!resetParent) return;
-        particleSpawner.transform.SetParent(null);
-        _exploded = true;
+        // if (!goParticle.activeSelf)
+        goParticle.SetActive(true);
+
+        goParticle.transform.SetParent(null);
+        _itsBlown = true;
     }
 
     private void PlaySoundOnce(AudioClip finishSound)
@@ -115,5 +136,9 @@ public class Omnibus : MonoBehaviour
         _audioManager.OnPlaySound?.Invoke(thrusterSound, _thrusts.Item1, false);
     }
 
-    private void ResetThrust() => _thrusts = default;
+    private void ResetThrust()
+    {
+        _readInput = false;
+        _thrusts = default;
+    }
 }

@@ -400,9 +400,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9593858bd9ec4ff499a7be1e86e7bdb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosion: {fileID: 4774285512691877666}
-  streamFlame: {fileID: 6574186005827861261}
-  success: {fileID: 2246303604894197015}
+  goExplosion: {fileID: 4774285512691877666}
+  goExhaust: {fileID: 6574186005827861261}
+  goWarp: {fileID: 2246303604894197015}
+  psExhausts:
+  - {fileID: 6483012679395131727}
+  - {fileID: 6483441200034982227}
+  psStreamsL: []
+  psStreamsR: []
+  shipMRenderers:
+  - {fileID: 2847574545349395937}
+  - {fileID: 4201436730839723769}
+  - {fileID: 869916946192367346}
+  - {fileID: 8428739633667490241}
 --- !u!114 &3579214375425562369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -583,10 +593,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1556370301073458197, guid: 93c4015cdcc122043a2900f3228fbcfd, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682407217582520477, guid: 93c4015cdcc122043a2900f3228fbcfd, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 93c4015cdcc122043a2900f3228fbcfd, type: 3}
+--- !u!198 &6483012679395131727 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1683550709204024919, guid: 93c4015cdcc122043a2900f3228fbcfd, type: 3}
+  m_PrefabInstance: {fileID: 5667047709379739416}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &6483441200034982227 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1683408061419656779, guid: 93c4015cdcc122043a2900f3228fbcfd, type: 3}
+  m_PrefabInstance: {fileID: 5667047709379739416}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6568979456795388799 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1552846726604624999, guid: 93c4015cdcc122043a2900f3228fbcfd, type: 3}

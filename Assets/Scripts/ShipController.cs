@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class Navigator : MonoBehaviour
+public class ShipController : MonoBehaviour
 {
     public Action<(float, float)> Move;
     private Rigidbody _rigidbody;

@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Omnibus : MonoBehaviour
@@ -10,10 +9,14 @@ public class Omnibus : MonoBehaviour
     private CollisionHandler _collisionHandler;
     private Navigator _navigator;
 
+    private ParticleAccess _particles;
+    private ParticleSystem _trail;
+
     private (float, float) _thrusts;
 
-    private bool _playOnce;
-    private bool _playedOnce;
+    private bool _playSoundOnce;
+    private bool _playedSoundOnce;
+    private bool _exploded;
 
     private void Awake()
     {
@@ -24,6 +27,9 @@ public class Omnibus : MonoBehaviour
 
         _navigator = GameObject.FindWithTag("Player").GetComponent<Navigator>();
         _collisionHandler = GameObject.FindWithTag("Player").GetComponent<CollisionHandler>();
+
+        _particles = GameObject.FindWithTag("Player").GetComponent<ParticleAccess>();
+        _trail = _particles.streamFlame.GetComponent<ParticleSystem>();
     }
 
     private void Start() => _collisionHandler.OnCollide += Coll;
@@ -32,6 +38,18 @@ public class Omnibus : MonoBehaviour
     {
         UpdateInput();
         PlaySoundContinuously(_data.thrusterSound);
+        PlayTrail();
+    }
+
+    private void PlayTrail()
+    {
+        ActivateParticles(_particles.streamFlame, false);
+
+        var emission = _trail.emission;
+        var shape = _trail.shape;
+
+        emission.rateOverTime = 32f * _thrusts.Item1;
+        shape.scale = new Vector3(1f, 1f, _thrusts.Item1);
     }
 
     private void FixedUpdate() => _navigator.Move(_thrusts);
@@ -39,7 +57,7 @@ public class Omnibus : MonoBehaviour
 
     private void Coll(Collide.CollisionType type)
     {
-        print($"touching {type}");
+        // print($"touching {type}");
 
         switch (type)
         {
@@ -48,12 +66,14 @@ public class Omnibus : MonoBehaviour
             case Collide.CollisionType.Finish:
                 ResetThrust();
                 PlaySoundOnce(_data.finishSound);
+                ActivateParticles(_particles.success);
 
                 _levelManager.OnNextLevel?.Invoke(false);
                 break;
             case Collide.CollisionType.Obstacle:
                 ResetThrust();
                 PlaySoundOnce(_data.collisionSound);
+                ActivateParticles(_particles.explosion);
 
                 _levelManager.OnNextLevel?.Invoke(true);
                 break;
@@ -69,17 +89,29 @@ public class Omnibus : MonoBehaviour
         }
     }
 
+    private void ActivateParticles(GameObject particleSpawner, bool resetParent = true)
+    {
+        if (_exploded) return;
+
+        if (!particleSpawner.activeSelf)
+            particleSpawner.SetActive(true);
+
+        if (!resetParent) return;
+        particleSpawner.transform.SetParent(null);
+        _exploded = true;
+    }
+
     private void PlaySoundOnce(AudioClip finishSound)
     {
-        _playOnce = true;
-        if (_playedOnce) return;
+        _playSoundOnce = true;
+        if (_playedSoundOnce) return;
         _audioManager.OnPlaySound?.Invoke(finishSound, 1f, true);
-        _playedOnce = true;
+        _playedSoundOnce = true;
     }
 
     private void PlaySoundContinuously(AudioClip thrusterSound)
     {
-        if (_playOnce) return;
+        if (_playSoundOnce) return;
         _audioManager.OnPlaySound?.Invoke(thrusterSound, _thrusts.Item1, false);
     }
 

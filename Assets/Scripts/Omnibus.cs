@@ -51,7 +51,7 @@ public class Omnibus : MonoBehaviour
     {
         UpdateInput();
         PlaySoundContinuously(_gameData.thrusterSound, _thrusts.Item1);
-        // PlaySoundContinuously(_gameData.rcsSound, Mathf.Abs(_thrusts.Item2));
+        PlaySoundContinuouslyExtra(_gameData.rcsSound, Mathf.Abs(_thrusts.Item2));
         DrawExhaust();
         DrawRcs();
     }
@@ -178,10 +178,15 @@ public class Omnibus : MonoBehaviour
         _isPlaying = true;
     }
 
-    private void PlaySoundContinuously(AudioClip thrusterSound, float value)
+    private void PlaySoundContinuously(AudioClip clip, float value)
     {
         if (_playOnce) return;
-        _audioManager.OnPlaySound?.Invoke(thrusterSound, value, false);
+        _audioManager.OnPlaySound?.Invoke(clip, value, false);
+    }
+
+    private void PlaySoundContinuouslyExtra(AudioClip clip, float value)
+    {
+        _audioManager.OnPlaySoundExtra?.Invoke(clip, value);
     }
 
     private void ResetThrust()

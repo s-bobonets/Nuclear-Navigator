@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    private AudioSource _audioSource;
+    private AudioSource[] _audioSource;
 
     public Action<AudioClip, float, bool> OnPlaySound;
 
     private void Awake()
     {
-        _audioSource = GameObject.FindWithTag("Player").GetComponent<AudioSource>();
+        _audioSource = GameObject.FindWithTag("Player").GetComponents<AudioSource>();
 
         OnPlaySound += PlaySound;
     }
@@ -18,18 +18,18 @@ public class AudioManager : MonoBehaviour
     {
         if (!once)
         {
-            _audioSource.volume = value;
+            _audioSource[0].volume = value;
 
-            if (!_audioSource.isPlaying)
-                _audioSource.PlayOneShot(clip);
+            if (!_audioSource[0].isPlaying)
+                _audioSource[0].PlayOneShot(clip);
             if (value == 0f)
-                _audioSource.Stop();
+                _audioSource[0].Stop();
         }
         else
         {
-            _audioSource.volume = 5f;
-            _audioSource.Stop();
-            _audioSource.PlayOneShot(clip);
+            _audioSource[0].volume = 5f;
+            _audioSource[0].Stop();
+            _audioSource[0].PlayOneShot(clip);
         }
     }
 }

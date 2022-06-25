@@ -4,10 +4,13 @@ using UnityEngine;
 public class Omnibus : MonoBehaviour
 {
     private Data _gameData;
-
     private DataAccess _shipData;
-    private ParticleSystem[] _psExhausts;
+
     private MeshRenderer[] _shipMRenderers;
+
+    private ParticleSystem[] _psExhausts;
+    private ParticleSystem[] _psRcsL;
+    private ParticleSystem[] _psRcsR;
 
     private InputHandler _inputHandler;
     private LevelManager _levelManager;
@@ -17,14 +20,15 @@ public class Omnibus : MonoBehaviour
 
     private (float, float) _thrusts;
 
-    private bool _playSoundOnce; // remove one of these
-    private bool _playedSoundOnce;
+    private bool _playOnce; // remove one of these
+    private bool _isPlaying;
     private bool _itsBlown;
     private bool _readInput = true;
 
     private void Awake()
     {
         _gameData = GetComponent<Data>();
+
         _inputHandler = GetComponent<InputHandler>();
         _levelManager = GetComponent<LevelManager>();
         _audioManager = GetComponent<AudioManager>();
@@ -33,7 +37,10 @@ public class Omnibus : MonoBehaviour
         _collisionHandler = GameObject.FindWithTag("Player").GetComponent<CollisionHandler>();
 
         _shipData = GameObject.FindWithTag("Player").GetComponent<DataAccess>();
+
         _psExhausts = _shipData.psExhausts;
+        _psRcsL = _shipData.psStreamsL;
+        _psRcsR = _shipData.psStreamsR;
 
         _shipMRenderers = _shipData.shipMRenderers;
     }
@@ -43,8 +50,49 @@ public class Omnibus : MonoBehaviour
     private void Update()
     {
         UpdateInput();
-        PlaySoundContinuously(_gameData.thrusterSound);
+        PlaySoundContinuously(_gameData.thrusterSound, _thrusts.Item1);
+        // PlaySoundContinuously(_gameData.rcsSound, Mathf.Abs(_thrusts.Item2));
         DrawExhaust();
+        DrawRcs();
+    }
+
+    private void DrawRcs()
+    {
+        switch (_thrusts.Item2)
+        {
+            case > 0f:
+                _shipData.goRcs[1].SetActive(true);
+
+                foreach (var item in _psRcsR)
+                {
+                    var emission = item.emission;
+                    var shape = item.shape;
+
+                    emission.rateOverTime = 32f * _thrusts.Item2;
+                    shape.scale = new Vector3(1f, 1f, _thrusts.Item2);
+                }
+
+                break;
+            case < 0f:
+                _shipData.goRcs[0].SetActive(true);
+
+
+                foreach (var item in _psRcsL)
+                {
+                    var emission = item.emission;
+                    var shape = item.shape;
+
+                    emission.rateOverTime = 32f * Mathf.Abs(_thrusts.Item2);
+                    shape.scale = new Vector3(1f, 1f, Mathf.Abs(_thrusts.Item2));
+                }
+
+                break;
+            case 0f:
+                foreach (var obj in _shipData.goRcs)
+                    obj.SetActive(false);
+
+                break;
+        }
     }
 
     private void DrawExhaust()
@@ -124,16 +172,16 @@ public class Omnibus : MonoBehaviour
 
     private void PlaySoundOnce(AudioClip finishSound)
     {
-        _playSoundOnce = true;
-        if (_playedSoundOnce) return;
+        _playOnce = true;
+        if (_isPlaying) return;
         _audioManager.OnPlaySound?.Invoke(finishSound, 1f, true);
-        _playedSoundOnce = true;
+        _isPlaying = true;
     }
 
-    private void PlaySoundContinuously(AudioClip thrusterSound)
+    private void PlaySoundContinuously(AudioClip thrusterSound, float value)
     {
-        if (_playSoundOnce) return;
-        _audioManager.OnPlaySound?.Invoke(thrusterSound, _thrusts.Item1, false);
+        if (_playOnce) return;
+        _audioManager.OnPlaySound?.Invoke(thrusterSound, value, false);
     }
 
     private void ResetThrust()

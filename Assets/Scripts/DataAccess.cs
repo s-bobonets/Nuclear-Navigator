@@ -6,6 +6,7 @@ public class DataAccess : MonoBehaviour
     public GameObject goExplosion;
     public GameObject goExhaust;
     public GameObject goWarp;
+    public GameObject[] goRcs;
     [Space]
     public ParticleSystem[] psExhausts;
     public ParticleSystem[] psStreamsL;

@@ -6,9 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/FlyOverScene.unity
+    path: Assets/Scenes/Moving Desert Scene.unity
     guid: fa77d0d9bfd9f47469e90f0eb0a073f1
   - enabled: 1
-    path: Assets/Scenes/FlyUnderScene.unity
+    path: Assets/Scenes/Falling Sky Scene.unity
     guid: 7acb892879e51914391164ff0930eb77
+  - enabled: 1
+    path: Assets/Scenes/Wacky Shifters Scene.unity
+    guid: 1179f3436e6cd6044b0a9a644f9dfd5a
   m_configObjects: {}

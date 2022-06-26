@@ -1,10 +1,10 @@
-using System;
 using UnityEngine;
 
 public class Omnibus : MonoBehaviour
 {
-    private Data _gameData;
+    private AudioClipsAccess _gameAudioClipsAccess;
     private DataAccess _shipData;
+    private Collider _shipCollider;
 
     private MeshRenderer[] _shipMRenderers;
 
@@ -27,7 +27,7 @@ public class Omnibus : MonoBehaviour
 
     private void Awake()
     {
-        _gameData = GetComponent<Data>();
+        _gameAudioClipsAccess = GetComponent<AudioClipsAccess>();
 
         _inputHandler = GetComponent<InputHandler>();
         _levelManager = GetComponent<LevelManager>();
@@ -37,6 +37,7 @@ public class Omnibus : MonoBehaviour
         _collisionHandler = GameObject.FindWithTag("Player").GetComponent<CollisionHandler>();
 
         _shipData = GameObject.FindWithTag("Player").GetComponent<DataAccess>();
+        _shipCollider = GameObject.FindWithTag("Player").GetComponent<Collider>();
 
         _psExhausts = _shipData.psExhausts;
         _psRcsL = _shipData.psStreamsL;
@@ -45,15 +46,31 @@ public class Omnibus : MonoBehaviour
         _shipMRenderers = _shipData.shipMRenderers;
     }
 
-    private void Start() => _collisionHandler.OnCollide += Coll;
+    private void Start()
+    {
+        _collisionHandler.OnCollide += Coll;
+
+        ProcessCheats();
+    }
+
+    private void ProcessCheats()
+    {
+        _inputHandler.OnNextLevel += () => { _levelManager.OnNextLevel?.Invoke(false); };
+        _inputHandler.OnDisableCollisions += () => { _shipCollider.enabled = !_shipCollider.enabled; };
+    }
 
     private void Update()
     {
         UpdateInput();
-        PlaySoundContinuously(_gameData.thrusterSound, _thrusts.Item1);
-        PlaySoundContinuouslyExtra(_gameData.rcsSound, Mathf.Abs(_thrusts.Item2));
+        PlaySounds();
         DrawExhaust();
         DrawRcs();
+    }
+
+    private void PlaySounds()
+    {
+        PlaySoundContinuously(_gameAudioClipsAccess.thrusterSound, _thrusts.Item1);
+        PlaySoundContinuouslyExtra(_gameAudioClipsAccess.rcsSound, Mathf.Abs(_thrusts.Item2));
     }
 
     private void DrawRcs()
@@ -112,7 +129,7 @@ public class Omnibus : MonoBehaviour
     private void UpdateInput()
     {
         if (!_readInput) return;
-        _thrusts = _inputHandler.ReadThrusts();
+        _thrusts = _inputHandler.OnThrustersRead.Invoke();
     }
 
     private void Coll(Collide.CollisionType type)
@@ -125,14 +142,14 @@ public class Omnibus : MonoBehaviour
                 break;
             case Collide.CollisionType.Finish:
                 ResetThrust();
-                PlaySoundOnce(_gameData.finishSound);
+                PlaySoundOnce(_gameAudioClipsAccess.finishSound);
                 ActivateExplosion(_shipData.goWarp);
 
                 _levelManager.OnNextLevel?.Invoke(false);
                 break;
             case Collide.CollisionType.Obstacle:
                 ResetThrust();
-                PlaySoundOnce(_gameData.collisionSound);
+                PlaySoundOnce(_gameAudioClipsAccess.collisionSound);
                 ActivateExplosion(_shipData.goExplosion);
                 HideShip();
 

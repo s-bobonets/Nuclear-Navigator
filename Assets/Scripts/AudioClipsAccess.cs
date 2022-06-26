@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Data : MonoBehaviour
+public class AudioClipsAccess : MonoBehaviour
 {
     [Header("Sounds")][Space]
     public AudioClip thrusterSound;

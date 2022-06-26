@@ -114,6 +114,54 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""CheatMap"",
+            ""id"": ""5440d4db-3b65-4c30-a412-a69d628e38dc"",
+            ""actions"": [
+                {
+                    ""name"": ""NextLevel"",
+                    ""type"": ""Button"",
+                    ""id"": ""5fab6e27-9509-41e8-ad37-987d8eb8a1e5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DisableCollisions"",
+                    ""type"": ""Button"",
+                    ""id"": ""1fa3c7ce-9fd5-4bef-8126-502ec645d354"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""0cad89de-b95a-4eb7-8778-51213b8e8182"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NextLevel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fa14af92-b534-459e-8525-d7ead35aeb78"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DisableCollisions"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -122,6 +170,10 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_GameMap = asset.FindActionMap("GameMap", throwIfNotFound: true);
         m_GameMap_Thrust = m_GameMap.FindAction("Thrust", throwIfNotFound: true);
         m_GameMap_Rotate = m_GameMap.FindAction("Rotate", throwIfNotFound: true);
+        // CheatMap
+        m_CheatMap = asset.FindActionMap("CheatMap", throwIfNotFound: true);
+        m_CheatMap_NextLevel = m_CheatMap.FindAction("NextLevel", throwIfNotFound: true);
+        m_CheatMap_DisableCollisions = m_CheatMap.FindAction("DisableCollisions", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -218,9 +270,55 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         }
     }
     public GameMapActions @GameMap => new GameMapActions(this);
+
+    // CheatMap
+    private readonly InputActionMap m_CheatMap;
+    private ICheatMapActions m_CheatMapActionsCallbackInterface;
+    private readonly InputAction m_CheatMap_NextLevel;
+    private readonly InputAction m_CheatMap_DisableCollisions;
+    public struct CheatMapActions
+    {
+        private @Controls m_Wrapper;
+        public CheatMapActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @NextLevel => m_Wrapper.m_CheatMap_NextLevel;
+        public InputAction @DisableCollisions => m_Wrapper.m_CheatMap_DisableCollisions;
+        public InputActionMap Get() { return m_Wrapper.m_CheatMap; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(CheatMapActions set) { return set.Get(); }
+        public void SetCallbacks(ICheatMapActions instance)
+        {
+            if (m_Wrapper.m_CheatMapActionsCallbackInterface != null)
+            {
+                @NextLevel.started -= m_Wrapper.m_CheatMapActionsCallbackInterface.OnNextLevel;
+                @NextLevel.performed -= m_Wrapper.m_CheatMapActionsCallbackInterface.OnNextLevel;
+                @NextLevel.canceled -= m_Wrapper.m_CheatMapActionsCallbackInterface.OnNextLevel;
+                @DisableCollisions.started -= m_Wrapper.m_CheatMapActionsCallbackInterface.OnDisableCollisions;
+                @DisableCollisions.performed -= m_Wrapper.m_CheatMapActionsCallbackInterface.OnDisableCollisions;
+                @DisableCollisions.canceled -= m_Wrapper.m_CheatMapActionsCallbackInterface.OnDisableCollisions;
+            }
+            m_Wrapper.m_CheatMapActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @NextLevel.started += instance.OnNextLevel;
+                @NextLevel.performed += instance.OnNextLevel;
+                @NextLevel.canceled += instance.OnNextLevel;
+                @DisableCollisions.started += instance.OnDisableCollisions;
+                @DisableCollisions.performed += instance.OnDisableCollisions;
+                @DisableCollisions.canceled += instance.OnDisableCollisions;
+            }
+        }
+    }
+    public CheatMapActions @CheatMap => new CheatMapActions(this);
     public interface IGameMapActions
     {
         void OnThrust(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+    }
+    public interface ICheatMapActions
+    {
+        void OnNextLevel(InputAction.CallbackContext context);
+        void OnDisableCollisions(InputAction.CallbackContext context);
     }
 }

@@ -9,7 +9,7 @@ public class LevelManager : MonoBehaviour
 
     private void Awake() => OnNextLevel += ChangeLevel;
 
-    private void ChangeLevel(bool restart = false)
+    private void ChangeLevel(bool restart)
     {
         StartCoroutine(LoadNext(restart));
     }

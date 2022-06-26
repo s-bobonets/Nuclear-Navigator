@@ -20,9 +20,9 @@ public class Omnibus : MonoBehaviour
 
     private (float, float) _thrusts;
 
-    private bool _playOnce; // remove one of these
+    private bool _playOnce;
     private bool _isPlaying;
-    private bool _itsBlown;
+    private bool _BlownUp;
     private bool _readInput = true;
 
     private void Awake()
@@ -49,6 +49,7 @@ public class Omnibus : MonoBehaviour
     private void Start()
     {
         _collisionHandler.OnCollide += Coll;
+        _inputHandler.OnExitGame += Application.Quit;
 
         ProcessCheats();
     }
@@ -178,13 +179,13 @@ public class Omnibus : MonoBehaviour
     private void ActivateExplosion(GameObject goParticle)
     {
         // we never need more than one type of ship explosion in a level
-        if (_itsBlown) return;
+        if (_BlownUp) return;
 
         // if (!goParticle.activeSelf)
         goParticle.SetActive(true);
 
         goParticle.transform.SetParent(null);
-        _itsBlown = true;
+        _BlownUp = true;
     }
 
     private void PlaySoundOnce(AudioClip finishSound)

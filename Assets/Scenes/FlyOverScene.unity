@@ -592,9 +592,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f3a2ea3c39362448b5bb1edaea77f65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _direction: {x: 0, y: 1, z: 0}
-  _amount: 10
-  _factor: 0
+  _mode: 0
+  _direction: 0
+  _inverted: 0
+  _use: 0
+  _customDirection: {x: 0, y: 0, z: 0}
+  _amplitude: 4
+  _period: 2
 --- !u!4 &1038967736 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1195069106725495686, guid: 6ac88ddfa8aad0f4cb3cdc7cee67737e, type: 3}
@@ -1104,15 +1108,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1195069106725495686, guid: 6ac88ddfa8aad0f4cb3cdc7cee67737e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.1
+      value: -0.73
       objectReference: {fileID: 0}
     - target: {fileID: 1195069106725495686, guid: 6ac88ddfa8aad0f4cb3cdc7cee67737e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.15
+      value: -0.3
       objectReference: {fileID: 0}
     - target: {fileID: 1195069106725495686, guid: 6ac88ddfa8aad0f4cb3cdc7cee67737e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.04
+      value: -0.22
       objectReference: {fileID: 0}
     - target: {fileID: 1195069106725495686, guid: 6ac88ddfa8aad0f4cb3cdc7cee67737e, type: 3}
       propertyPath: m_LocalRotation.w

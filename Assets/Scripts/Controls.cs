@@ -44,6 +44,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": ""Invert"",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""89e34f80-a454-46ff-8ca5-c633ce0722b5"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -112,6 +121,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1de717be-c4e0-46eb-a0c0-799ac18ed4e1"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -170,6 +190,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_GameMap = asset.FindActionMap("GameMap", throwIfNotFound: true);
         m_GameMap_Thrust = m_GameMap.FindAction("Thrust", throwIfNotFound: true);
         m_GameMap_Rotate = m_GameMap.FindAction("Rotate", throwIfNotFound: true);
+        m_GameMap_Quit = m_GameMap.FindAction("Quit", throwIfNotFound: true);
         // CheatMap
         m_CheatMap = asset.FindActionMap("CheatMap", throwIfNotFound: true);
         m_CheatMap_NextLevel = m_CheatMap.FindAction("NextLevel", throwIfNotFound: true);
@@ -235,12 +256,14 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private IGameMapActions m_GameMapActionsCallbackInterface;
     private readonly InputAction m_GameMap_Thrust;
     private readonly InputAction m_GameMap_Rotate;
+    private readonly InputAction m_GameMap_Quit;
     public struct GameMapActions
     {
         private @Controls m_Wrapper;
         public GameMapActions(@Controls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Thrust => m_Wrapper.m_GameMap_Thrust;
         public InputAction @Rotate => m_Wrapper.m_GameMap_Rotate;
+        public InputAction @Quit => m_Wrapper.m_GameMap_Quit;
         public InputActionMap Get() { return m_Wrapper.m_GameMap; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -256,6 +279,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Rotate.started -= m_Wrapper.m_GameMapActionsCallbackInterface.OnRotate;
                 @Rotate.performed -= m_Wrapper.m_GameMapActionsCallbackInterface.OnRotate;
                 @Rotate.canceled -= m_Wrapper.m_GameMapActionsCallbackInterface.OnRotate;
+                @Quit.started -= m_Wrapper.m_GameMapActionsCallbackInterface.OnQuit;
+                @Quit.performed -= m_Wrapper.m_GameMapActionsCallbackInterface.OnQuit;
+                @Quit.canceled -= m_Wrapper.m_GameMapActionsCallbackInterface.OnQuit;
             }
             m_Wrapper.m_GameMapActionsCallbackInterface = instance;
             if (instance != null)
@@ -266,6 +292,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Rotate.started += instance.OnRotate;
                 @Rotate.performed += instance.OnRotate;
                 @Rotate.canceled += instance.OnRotate;
+                @Quit.started += instance.OnQuit;
+                @Quit.performed += instance.OnQuit;
+                @Quit.canceled += instance.OnQuit;
             }
         }
     }
@@ -315,6 +344,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     {
         void OnThrust(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnQuit(InputAction.CallbackContext context);
     }
     public interface ICheatMapActions
     {

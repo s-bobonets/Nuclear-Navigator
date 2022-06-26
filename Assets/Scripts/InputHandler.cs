@@ -7,6 +7,7 @@ public class InputHandler : MonoBehaviour
 
     public Action OnNextLevel;
     public Action OnDisableCollisions;
+    public Action OnExitGame;
 
     public Func<(float, float)> OnThrustersRead;
 
@@ -14,6 +15,8 @@ public class InputHandler : MonoBehaviour
     {
         _controls = new Controls();
         _controls.Enable();
+
+        _controls.GameMap.Quit.started += _ => OnExitGame?.Invoke();
 
         _controls.CheatMap.NextLevel.started += _ => { OnNextLevel?.Invoke(); };
         _controls.CheatMap.DisableCollisions.started += _ => { OnDisableCollisions?.Invoke(); };

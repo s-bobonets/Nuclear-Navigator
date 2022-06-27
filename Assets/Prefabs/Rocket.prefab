@@ -543,7 +543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotateThrustMult: 1
-  _forwardThrustMult: 16
+  _forwardThrustMult: 32
 --- !u!1 &5665087925652013037
 GameObject:
   m_ObjectHideFlags: 0

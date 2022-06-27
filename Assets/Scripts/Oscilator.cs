@@ -16,6 +16,11 @@ public class Oscilator : MonoBehaviour
         Global
     }
 
+    private void Awake()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
+
     [Header("Movement")] [Space] [SerializeField]
     private Mode _mode;
 
@@ -36,6 +41,7 @@ public class Oscilator : MonoBehaviour
     private float _factor;
     private Vector3 _dir;
     private Vector3 _startPos;
+    private AudioSource _audioSource;
 
     private void Start()
     {
@@ -66,6 +72,16 @@ public class Oscilator : MonoBehaviour
         const float tau = Mathf.PI * 2f;
         var sinWave = Mathf.Sin(cycles * tau);
         _factor = (sinWave + 1f) * .5f;
+
+        PlayNoise(_factor);
+    }
+
+    private void PlayNoise(float value)
+    {
+        _audioSource.volume = value * .05f;
+
+        if (!_audioSource.isPlaying)
+            _audioSource.Play();
     }
 
     private void Update()

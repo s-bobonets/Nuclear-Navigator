@@ -26,13 +26,13 @@ public class LevelManager : MonoBehaviour
 
         else
         {
-            if (currentIndex == sceneCount - 1)
+            if (currentIndex == sceneCount - 1) // this line runs by the last scene
             {
                 currentIndex = 0;
                 SceneManager.LoadScene(currentIndex);
             }
             else
-                SceneManager.LoadScene(currentIndex + 1);
+                SceneManager.LoadScene(currentIndex + 1); // load next scene
         }
     }
 }

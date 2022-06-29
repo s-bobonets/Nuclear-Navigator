@@ -6,4 +6,4 @@ Oscillator Demo <br>
 ![gif](./res/oscDemo.gif)
 
 Gameplay Demo <br>
-![webm](./res/gameDemo.webm)
+![webp](./res/gameDemo.webp)
